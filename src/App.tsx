@@ -192,12 +192,12 @@ export default function App() {
             </a>
             <a
               id="contact-linkedin-link"
-              href="https://linkedin.com/in/serir-louai-mouiz"
+              href="https://www.linkedin.com/in/louai-serir"
               target="_blank"
               rel="noopener noreferrer referrer"
               className="text-[14px] text-[#3B82F6] hover:underline"
             >
-              linkedin.com/in/serir-louai-mouiz
+              linkedin.com/in/louai-serir
             </a>
           </div>
         </section>
