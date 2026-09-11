@@ -11,6 +11,7 @@ interface ProjectRow {
   description: string;
   year: string;
   tag?: string;
+  url?: string;
 }
 
 const SPEC_PROJECTS: ProjectRow[] = [
@@ -18,7 +19,8 @@ const SPEC_PROJECTS: ProjectRow[] = [
     name: "GridForecast AI",
     category: "AI / MACHINE LEARNING",
     description: "ML load-forecasting platform built during a capstone internship at SONELGAZ, Algeria's national electricity company. Random Forest trained on ~106,000 hourly records — 98.65% accuracy, in a real production environment.",
-    year: "2025 – 2026"
+    year: "2025 – 2026",
+    url: "https://electricity-forecasting-app.vercel.app/"
   },
   {
     name: "Clinicos",
@@ -36,7 +38,8 @@ const SPEC_PROJECTS: ProjectRow[] = [
     name: "CosmeticaDZ",
     category: "E-COMMERCE",
     description: "Bilingual e-commerce marketplace for the Algerian market. Solo, concept to launch — regional payment flow by Wilaya/Baladia, admin dashboard tracking orders, stock, and margins.",
-    year: "2025"
+    year: "2025",
+    url: "https://cosmeticadz.netlify.app/"
   }
 ];
 
@@ -63,16 +66,53 @@ export default function ProjectList() {
                   {project.category}
                 </span>
               )}
-              <span className="text-[14px] font-medium text-[#E8E8E8] transition-colors duration-200 group-hover:text-[#3B82F6]">
-                {project.name}
-              </span>
+              {project.url ? (
+                <a
+                  href={project.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[14px] font-medium text-[#E8E8E8] transition-colors duration-200 hover:text-[#3B82F6] inline-flex items-center gap-1.5 w-fit"
+                >
+                  <span>{project.name}</span>
+                  <span className="text-[12px] text-[#666666] transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[#3B82F6]">
+                    ↗
+                  </span>
+                </a>
+              ) : (
+                <span className="text-[14px] font-medium text-[#E8E8E8] transition-colors duration-200 group-hover:text-[#3B82F6]">
+                  {project.name}
+                </span>
+              )}
               <span className="text-[14px] text-[#666666] font-normal leading-[1.5] mt-1">
                 {project.description}
               </span>
+              {project.url && (
+                <a
+                  href={project.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-[13px] text-[#3B82F6] hover:underline mt-2 w-fit font-mono"
+                >
+                  <span>{project.url.replace(/^https?:\/\//, '').replace(/\/$/, '')}</span>
+                  <span className="text-[11px]">↗</span>
+                </a>
+              )}
             </div>
 
             {/* Right: year right-aligned & optional tag */}
             <div className="flex items-center gap-2 shrink-0 select-none pt-[1px] text-right">
+              {project.url && (
+                <a
+                  href={project.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[11px] text-[#3B82F6] border border-[#3B82F6]/30 bg-[#3B82F6]/10 hover:bg-[#3B82F6]/20 rounded-[4px] px-1.5 py-[2px] font-normal leading-none inline-flex items-center gap-1 transition-colors"
+                  title={`Open ${project.name}`}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#3B82F6] inline-block animate-pulse" />
+                  Live
+                </a>
+              )}
               <span className="text-[14px] text-[#666666] font-normal">
                 {project.year}
               </span>
