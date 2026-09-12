@@ -5,7 +5,7 @@
 
 import React from "react";
 import { ArrowUpRight } from "lucide-react";
-import LiquidGlassEmoji from "./LiquidGlassEmoji";
+import LiquidGlassOrb from "./LiquidGlassOrb";
 
 interface ProjectRow {
   name: string;
@@ -14,7 +14,6 @@ interface ProjectRow {
   year: string;
   tag?: string;
   url?: string;
-  emoji: string;
   glowColor: string;
   accentGradient: string;
   accentColor: string;
@@ -27,30 +26,27 @@ const SPEC_PROJECTS: ProjectRow[] = [
     description: "ML load-forecasting platform built during a capstone internship at SONELGAZ, Algeria's national electricity company. Random Forest trained on ~106,000 hourly records — 98.65% accuracy, in a real production environment.",
     year: "2025 – 2026",
     url: "https://electricity-forecasting-app.vercel.app/",
-    emoji: "⚡",
     glowColor: "rgba(59, 130, 246, 0.45)",
-    accentGradient: "radial-gradient(circle at 40% 40%, rgba(56, 189, 248, 0.45) 0%, rgba(37, 99, 235, 0.25) 60%, transparent 100%)",
-    accentColor: "rgba(59, 130, 246, 0.45)"
+    accentGradient: "radial-gradient(circle at 40% 40%, rgba(56, 189, 248, 0.55) 0%, rgba(37, 99, 235, 0.35) 60%, transparent 100%)",
+    accentColor: "rgba(59, 130, 246, 0.5)"
   },
   {
     name: "Clinicos",
     category: "HEALTH-TECH",
     description: "Algerian health-tech platform. Role-based clinical dashboard with Gantt-style scheduling, real-time queues, and a trust-scoring system that reduces appointment fraud. Bilingual RTL/LTR.",
     year: "2026",
-    emoji: "🩺",
     glowColor: "rgba(16, 185, 129, 0.45)",
-    accentGradient: "radial-gradient(circle at 40% 40%, rgba(52, 211, 153, 0.45) 0%, rgba(13, 148, 136, 0.25) 60%, transparent 100%)",
-    accentColor: "rgba(16, 185, 129, 0.45)"
+    accentGradient: "radial-gradient(circle at 40% 40%, rgba(52, 211, 153, 0.55) 0%, rgba(13, 148, 136, 0.35) 60%, transparent 100%)",
+    accentColor: "rgba(16, 185, 129, 0.5)"
   },
   {
     name: "Data Warehouse & BI",
     category: "DATA ENGINEERING",
     description: "Self-directed data engineering project. SQL Server warehouse using Medallion architecture (Bronze/Silver/Gold), star-schema modeling, and T-SQL ETL — with Power BI and Tableau dashboards built on top using DAX and LOD expressions.",
     year: "2026",
-    emoji: "📊",
     glowColor: "rgba(139, 92, 246, 0.45)",
-    accentGradient: "radial-gradient(circle at 40% 40%, rgba(167, 139, 250, 0.45) 0%, rgba(124, 58, 237, 0.25) 60%, transparent 100%)",
-    accentColor: "rgba(139, 92, 246, 0.45)"
+    accentGradient: "radial-gradient(circle at 40% 40%, rgba(167, 139, 250, 0.55) 0%, rgba(124, 58, 237, 0.35) 60%, transparent 100%)",
+    accentColor: "rgba(139, 92, 246, 0.5)"
   },
   {
     name: "CosmeticaDZ",
@@ -58,10 +54,9 @@ const SPEC_PROJECTS: ProjectRow[] = [
     description: "Bilingual e-commerce marketplace for the Algerian market. Solo, concept to launch — regional payment flow by Wilaya/Baladia, admin dashboard tracking orders, stock, and margins.",
     year: "2025",
     url: "https://cosmeticadz.netlify.app/",
-    emoji: "✨",
     glowColor: "rgba(244, 63, 94, 0.45)",
-    accentGradient: "radial-gradient(circle at 40% 40%, rgba(251, 113, 133, 0.45) 0%, rgba(219, 39, 119, 0.25) 60%, transparent 100%)",
-    accentColor: "rgba(244, 63, 94, 0.45)"
+    accentGradient: "radial-gradient(circle at 40% 40%, rgba(251, 113, 133, 0.55) 0%, rgba(219, 39, 119, 0.35) 60%, transparent 100%)",
+    accentColor: "rgba(244, 63, 94, 0.5)"
   }
 ];
 
@@ -81,7 +76,7 @@ export default function ProjectList() {
             key={project.name}
             className="group flex justify-between items-start py-5 border-b border-[#222222] transition-colors duration-200 hover:bg-[#141414] px-3 -mx-3"
           >
-            {/* Left: project category, liquid glass emoji + name, and description */}
+            {/* Left: project category, liquid glass orb + name, and description */}
             <div className="flex flex-col pr-4 flex-1">
               {project.category && (
                 <span className="text-[11px] font-sans text-[#666666] uppercase tracking-[0.06em] mb-1.5 select-none">
@@ -90,9 +85,8 @@ export default function ProjectList() {
               )}
 
               <div className="flex items-center gap-2.5 my-0.5">
-                {/* Liquid Glass Animated Emoji */}
-                <LiquidGlassEmoji
-                  emoji={project.emoji}
+                {/* Pure Abstract Liquid Glass Orb */}
+                <LiquidGlassOrb
                   glowColor={project.glowColor}
                   accentGradient={project.accentGradient}
                   accentColor={project.accentColor}
