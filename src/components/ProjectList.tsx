@@ -4,6 +4,8 @@
  */
 
 import React from "react";
+import { ArrowUpRight } from "lucide-react";
+import LiquidGlassEmoji from "./LiquidGlassEmoji";
 
 interface ProjectRow {
   name: string;
@@ -12,6 +14,10 @@ interface ProjectRow {
   year: string;
   tag?: string;
   url?: string;
+  emoji: string;
+  glowColor: string;
+  accentGradient: string;
+  accentColor: string;
 }
 
 const SPEC_PROJECTS: ProjectRow[] = [
@@ -20,26 +26,42 @@ const SPEC_PROJECTS: ProjectRow[] = [
     category: "AI / MACHINE LEARNING",
     description: "ML load-forecasting platform built during a capstone internship at SONELGAZ, Algeria's national electricity company. Random Forest trained on ~106,000 hourly records — 98.65% accuracy, in a real production environment.",
     year: "2025 – 2026",
-    url: "https://electricity-forecasting-app.vercel.app/"
+    url: "https://electricity-forecasting-app.vercel.app/",
+    emoji: "⚡",
+    glowColor: "rgba(59, 130, 246, 0.45)",
+    accentGradient: "radial-gradient(circle at 40% 40%, rgba(56, 189, 248, 0.45) 0%, rgba(37, 99, 235, 0.25) 60%, transparent 100%)",
+    accentColor: "rgba(59, 130, 246, 0.45)"
   },
   {
     name: "Clinicos",
     category: "HEALTH-TECH",
     description: "Algerian health-tech platform. Role-based clinical dashboard with Gantt-style scheduling, real-time queues, and a trust-scoring system that reduces appointment fraud. Bilingual RTL/LTR.",
-    year: "2026"
+    year: "2026",
+    emoji: "🩺",
+    glowColor: "rgba(16, 185, 129, 0.45)",
+    accentGradient: "radial-gradient(circle at 40% 40%, rgba(52, 211, 153, 0.45) 0%, rgba(13, 148, 136, 0.25) 60%, transparent 100%)",
+    accentColor: "rgba(16, 185, 129, 0.45)"
   },
   {
     name: "Data Warehouse & BI",
     category: "DATA ENGINEERING",
     description: "Self-directed data engineering project. SQL Server warehouse using Medallion architecture (Bronze/Silver/Gold), star-schema modeling, and T-SQL ETL — with Power BI and Tableau dashboards built on top using DAX and LOD expressions.",
-    year: "2026"
+    year: "2026",
+    emoji: "📊",
+    glowColor: "rgba(139, 92, 246, 0.45)",
+    accentGradient: "radial-gradient(circle at 40% 40%, rgba(167, 139, 250, 0.45) 0%, rgba(124, 58, 237, 0.25) 60%, transparent 100%)",
+    accentColor: "rgba(139, 92, 246, 0.45)"
   },
   {
     name: "CosmeticaDZ",
     category: "E-COMMERCE",
     description: "Bilingual e-commerce marketplace for the Algerian market. Solo, concept to launch — regional payment flow by Wilaya/Baladia, admin dashboard tracking orders, stock, and margins.",
     year: "2025",
-    url: "https://cosmeticadz.netlify.app/"
+    url: "https://cosmeticadz.netlify.app/",
+    emoji: "✨",
+    glowColor: "rgba(244, 63, 94, 0.45)",
+    accentGradient: "radial-gradient(circle at 40% 40%, rgba(251, 113, 133, 0.45) 0%, rgba(219, 39, 119, 0.25) 60%, transparent 100%)",
+    accentColor: "rgba(244, 63, 94, 0.45)"
   }
 ];
 
@@ -59,58 +81,79 @@ export default function ProjectList() {
             key={project.name}
             className="group flex justify-between items-start py-5 border-b border-[#222222] transition-colors duration-200 hover:bg-[#141414] px-3 -mx-3"
           >
-            {/* Left: project category, name and description */}
-            <div className="flex flex-col pr-4">
+            {/* Left: project category, liquid glass emoji + name, and description */}
+            <div className="flex flex-col pr-4 flex-1">
               {project.category && (
-                <span className="text-[11px] font-sans text-[#666666] uppercase tracking-[0.06em] mb-1 select-none">
+                <span className="text-[11px] font-sans text-[#666666] uppercase tracking-[0.06em] mb-1.5 select-none">
                   {project.category}
                 </span>
               )}
-              {project.url ? (
-                <a
-                  href={project.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[14px] font-medium text-[#E8E8E8] transition-colors duration-200 hover:text-[#3B82F6] inline-flex items-center gap-1.5 w-fit"
-                >
-                  <span>{project.name}</span>
-                  <span className="text-[12px] text-[#666666] transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[#3B82F6]">
-                    ↗
+
+              <div className="flex items-center gap-2.5 my-0.5">
+                {/* Liquid Glass Animated Emoji */}
+                <LiquidGlassEmoji
+                  emoji={project.emoji}
+                  glowColor={project.glowColor}
+                  accentGradient={project.accentGradient}
+                  accentColor={project.accentColor}
+                />
+
+                {project.url ? (
+                  <a
+                    href={project.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[14px] font-medium text-[#E8E8E8] transition-colors duration-200 hover:text-[#3B82F6] inline-flex items-center gap-1.5 group/title"
+                  >
+                    <span>{project.name}</span>
+                    <ArrowUpRight
+                      className="w-3.5 h-3.5 text-[#666666] transition-all duration-200 group-hover/title:translate-x-0.5 group-hover/title:-translate-y-0.5 group-hover/title:text-[#3B82F6] shrink-0"
+                      strokeWidth={2}
+                    />
+                  </a>
+                ) : (
+                  <span className="text-[14px] font-medium text-[#E8E8E8] transition-colors duration-200 group-hover:text-[#3B82F6]">
+                    {project.name}
                   </span>
-                </a>
-              ) : (
-                <span className="text-[14px] font-medium text-[#E8E8E8] transition-colors duration-200 group-hover:text-[#3B82F6]">
-                  {project.name}
-                </span>
-              )}
-              <span className="text-[14px] text-[#666666] font-normal leading-[1.5] mt-1">
+                )}
+              </div>
+
+              <span className="text-[14px] text-[#666666] font-normal leading-[1.5] mt-1.5">
                 {project.description}
               </span>
+
               {project.url && (
                 <a
                   href={project.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-[13px] text-[#3B82F6] hover:underline mt-2 w-fit font-mono"
+                  className="inline-flex items-center gap-1.5 text-[13px] text-[#3B82F6] hover:underline mt-2.5 w-fit font-mono group/link"
                 >
                   <span>{project.url.replace(/^https?:\/\//, '').replace(/\/$/, '')}</span>
-                  <span className="text-[11px]">↗</span>
+                  <ArrowUpRight
+                    className="w-3 h-3 text-[#3B82F6] transition-transform duration-200 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 shrink-0"
+                    strokeWidth={2}
+                  />
                 </a>
               )}
             </div>
 
             {/* Right: year right-aligned & optional tag */}
-            <div className="flex items-center gap-2 shrink-0 select-none pt-[1px] text-right">
+            <div className="flex items-center gap-2 shrink-0 select-none pt-[3px] text-right">
               {project.url && (
                 <a
                   href={project.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[11px] text-[#3B82F6] border border-[#3B82F6]/30 bg-[#3B82F6]/10 hover:bg-[#3B82F6]/20 rounded-[4px] px-1.5 py-[2px] font-normal leading-none inline-flex items-center gap-1 transition-colors"
+                  className="text-[11px] text-[#3B82F6] border border-[#3B82F6]/30 bg-[#3B82F6]/10 hover:bg-[#3B82F6]/20 rounded-[4px] px-1.5 py-[2px] font-normal leading-none inline-flex items-center gap-1 transition-colors group/live"
                   title={`Open ${project.name}`}
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-[#3B82F6] inline-block animate-pulse" />
                   Live
+                  <ArrowUpRight
+                    className="w-2.5 h-2.5 text-[#3B82F6] transition-transform duration-150 group-hover/live:translate-x-0.5 group-hover/live:-translate-y-0.5"
+                    strokeWidth={2.5}
+                  />
                 </a>
               )}
               <span className="text-[14px] text-[#666666] font-normal">

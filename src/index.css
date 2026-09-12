@@ -36,3 +36,61 @@
     outline-offset: 2px;
   }
 }
+
+/* Liquid Glass Animations */
+@keyframes liquid-glass-morph {
+  0%, 100% {
+    border-radius: 46% 54% 58% 42% / 48% 52% 48% 52%;
+    transform: rotate(0deg);
+  }
+  33% {
+    border-radius: 54% 46% 42% 58% / 52% 44% 56% 48%;
+    transform: rotate(4deg) scale(1.02);
+  }
+  66% {
+    border-radius: 42% 58% 50% 50% / 45% 55% 45% 55%;
+    transform: rotate(-3deg) scale(0.98);
+  }
+}
+
+@keyframes liquid-glow-pulse {
+  0%, 100% {
+    opacity: 0.45;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes liquid-wave {
+  0% {
+    transform: translateY(10%) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8%) rotate(180deg);
+  }
+  100% {
+    transform: translateY(10%) rotate(360deg);
+  }
+}
+
+@keyframes liquid-emoji-float {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-1.2px) scale(1.06);
+  }
+}
+
+@keyframes liquid-shimmer-sweep {
+  0% {
+    transform: translateX(-150%) rotate(25deg);
+  }
+  25%, 100% {
+    transform: translateX(200%) rotate(25deg);
+  }
+}
+
