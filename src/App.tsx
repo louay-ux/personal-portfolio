@@ -5,15 +5,24 @@
 
 import React, { useState, useEffect } from "react";
 import ProjectList from "./components/ProjectList";
-import KeyMetrics from "./components/KeyMetrics";
+import { STACK_CARDS } from "./data";
 
 export default function App() {
   const [mounted, setMounted] = useState(false);
+  const [lang, setLang] = useState<"en" | "ar">("en");
+
+  const isAr = lang === "ar";
 
   // Single CSS opacity fade-in on mount: 0.3s ease-out from 0 to 1
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Update html document direction for screen readers & browser consistency
+  useEffect(() => {
+    document.documentElement.dir = isAr ? "rtl" : "ltr";
+    document.documentElement.lang = isAr ? "ar" : "en";
+  }, [isAr]);
 
   // Smooth scroll helper
   const scrollToSection = (id: string) => {
@@ -26,71 +35,104 @@ export default function App() {
   return (
     <div
       id="app-container"
-      className="w-full min-h-screen bg-[#0C0C0C] text-[#666666] selection:bg-[#222222] selection:text-[#E8E8E8] transition-opacity duration-300 ease-out"
+      dir={isAr ? "rtl" : "ltr"}
+      className="w-full min-h-screen bg-[#0a0a0a] text-[#888888] selection:bg-[#222222] selection:text-[#E8E8E8] transition-opacity duration-300 ease-out"
       style={{ opacity: mounted ? 1 : 0 }}
     >
       <div className="max-w-[640px] mx-auto px-6 md:px-12 py-24 flex flex-col gap-0">
         
         {/* Navigation Block (top, not sticky) */}
         <nav id="nav-block" className="flex justify-between items-center mb-12 select-none">
-          {/* Left: "Louai Serir" in 14px Inter weight 500, #E8E8E8 */}
+          {/* Left: Brand Name */}
           <span className="text-[14px] font-medium text-[#E8E8E8]">
-            Louai Serir
+            {isAr ? "لؤي سرير" : "Louai Serir"}
           </span>
-          {/* Right: plain text links — "Work  Stack  Contact" separated by two spaces, 14px #666666, hover: #E8E8E8 */}
-          <div className="flex items-center text-[14px] text-[#666666]">
+
+          {/* Right: plain text links + GCC Bilingual Language Toggle */}
+          <div className="flex items-center gap-5 text-[14px] text-[#666666]">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => scrollToSection("work-section")}
+                className="hover:text-[#E8E8E8] transition-colors cursor-pointer bg-transparent border-none p-0"
+              >
+                {isAr ? "الأعمال" : "Work"}
+              </button>
+              <button
+                onClick={() => scrollToSection("stack-section")}
+                className="hover:text-[#E8E8E8] transition-colors cursor-pointer bg-transparent border-none p-0"
+              >
+                {isAr ? "التقنيات" : "Stack"}
+              </button>
+              <button
+                onClick={() => scrollToSection("contact-section")}
+                className="hover:text-[#E8E8E8] transition-colors cursor-pointer bg-transparent border-none p-0"
+              >
+                {isAr ? "تواصل معي" : "Contact"}
+              </button>
+            </div>
+
+            {/* 5. Working EN (LTR) / عربي (RTL) Switcher Pill */}
             <button
-              onClick={() => scrollToSection("work-section")}
-              className="hover:text-[#E8E8E8] transition-colors cursor-pointer bg-transparent border-none p-0"
+              onClick={() => setLang(isAr ? "en" : "ar")}
+              aria-label="Toggle language direction"
+              title={isAr ? "Switch to English (LTR)" : "التبديل إلى العربية (RTL)"}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono rounded-full border border-white/[0.12] bg-white/[0.04] hover:bg-white/[0.08] hover:border-white/25 text-[#E8E8E8] transition-all cursor-pointer"
             >
-              Work
-            </button>
-            <span className="whitespace-pre">  </span>
-            <button
-              onClick={() => scrollToSection("stack-section")}
-              className="hover:text-[#E8E8E8] transition-colors cursor-pointer bg-transparent border-none p-0"
-            >
-              Stack
-            </button>
-            <span className="whitespace-pre">  </span>
-            <button
-              onClick={() => scrollToSection("contact-section")}
-              className="hover:text-[#E8E8E8] transition-colors cursor-pointer bg-transparent border-none p-0"
-            >
-              Contact
+              <span className={!isAr ? "text-white font-medium" : "text-[#777777]"}>EN</span>
+              <span className="text-[#555555]">·</span>
+              <span className={isAr ? "text-white font-medium font-sans" : "text-[#777777] font-sans"}>عربي</span>
             </button>
           </div>
         </nav>
 
         {/* Hero Section */}
-        <section id="hero-section" className="flex flex-col items-start text-left">
-          {/* Line 1 — 14px Inter, #666666 */}
-          <span className="text-[14px] text-[#666666] font-normal leading-normal">
-            Full-stack product builder · Solo founder — Algeria
+        <section id="hero-section" className="flex flex-col items-start text-start">
+          {/* Eyebrow / Subtitle */}
+          <span className="text-[14px] text-[#888888] font-normal leading-normal">
+            {isAr
+              ? "مهندس واجهات المستخدم وتطبيقات الويب · React & Next.js & TypeScript"
+              : "UI & Frontend Engineer · React, Next.js & TypeScript — Algeria (Remote)"}
           </span>
-          {/* Line 2 — 24px Inter weight 500, #E8E8E8, margin-top 8px */}
+
+          {/* Main Headline */}
           <h1 className="text-[24px] font-medium text-[#E8E8E8] mt-2 tracking-tight leading-snug">
-            I take ideas from first conversation to deployed product.
+            {isAr
+              ? "هندسة وتطوير واجهات ويب عالية الأداء وقابلة للتوسع بمعايير عالمية."
+              : "Engineering high-performance, scalable web interfaces and digital products."}
           </h1>
-          {/* Below that, one short paragraph, 14px #666666, max-width 480px, margin-top 16px, line-height 1.7 */}
-          <p className="text-[14px] text-[#666666] max-w-[480px] mt-4 leading-[1.7]">
-            Three years building end-to-end — web apps, mobile apps, AI-powered 
-            tools, and data platforms. I handle everything: product scoping, 
-            design, development, and deployment. Solo. Fast.
+
+          {/* Bio Paragraph */}
+          <p className="text-[14px] text-[#888888] max-w-[560px] mt-4 leading-[1.7]">
+            {isAr
+              ? "خبرة عملية تزيد عن 5 سنوات في بناء تطبيقات ويب متجاوبة وثنائية اللغة (RTL/LTR) باستخدام React و Next.js و TypeScript، مع التركيز على الأداء الفائق وتجربة المستخدم الدقيقة."
+              : "5+ years of hands-on experience building responsive, bilingual (RTL/LTR) web applications, headless architectures, and design systems with React, Next.js (App Router, SSR/SSG), and TypeScript. Obsessed with 95+ Core Web Vitals, Zero-CLS layouts, WCAG accessibility, and pixel-perfect Figma-to-code execution."}
           </p>
-          {/* Below that, two plain text links side by side, margin-top 24px */}
-          <div className="flex flex-wrap gap-6 mt-6">
+
+          {/* 4.1 Upgraded Hero CTA Row */}
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2.5 mt-6">
             <button
               onClick={() => scrollToSection("work-section")}
-              className="text-[14px] font-normal text-[#3B82F6] hover:underline cursor-pointer bg-transparent border-0 p-0"
+              className="bg-white text-black font-medium px-4 py-1.5 rounded-full text-sm hover:bg-neutral-200 transition cursor-pointer border-none shadow-sm inline-flex items-center gap-1.5 select-none"
             >
-              See my work ↓
+              <span>{isAr ? "شاهد أعمالي ↓" : "See my work ↓"}</span>
             </button>
             <a
-              href="tel:+213776051622"
-              className="text-[14px] font-normal text-[#3B82F6] hover:underline"
+              href="https://github.com/louai-pixelouai"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[14px] font-normal text-[#3B82F6] hover:underline inline-flex items-center gap-1"
             >
-              +213 776-051-622
+              <span>GitHub</span>
+              <span className="text-xs">↗</span>
+            </a>
+            <a
+              href="https://linkedin.com/in/louai-serir"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[14px] font-normal text-[#3B82F6] hover:underline inline-flex items-center gap-1"
+            >
+              <span>LinkedIn</span>
+              <span className="text-xs">↗</span>
             </a>
             <a
               href="mailto:louaiserir1@gmail.com"
@@ -98,6 +140,52 @@ export default function App() {
             >
               louaiserir1@gmail.com
             </a>
+            <a
+              href="tel:+213776051622"
+              className="text-[14px] font-normal text-[#3B82F6] hover:underline"
+              dir="ltr"
+            >
+              +213 776-051-622
+            </a>
+          </div>
+
+          {/* 4.2 Engineering Telemetry Bar (4-Column Grid) */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-8 mt-8 border-t border-white/[0.08] w-full select-none">
+            <div className="flex flex-col">
+              <span className="text-[20px] font-medium text-[#E8E8E8] tracking-tight font-mono">
+                {isAr ? "+5 سنوات" : "5+ Years"}
+              </span>
+              <span className="text-[11px] text-[#888888] font-mono mt-0.5 leading-snug">
+                {isAr ? "هندسة واجهات وتطبيقات الإنتاج" : "Production UI & Frontend"}
+              </span>
+            </div>
+
+            <div className="flex flex-col">
+              <span className="text-[20px] font-medium text-[#E8E8E8] tracking-tight font-mono">
+                {isAr ? "+95 درجة" : "95+ Score"}
+              </span>
+              <span className="text-[11px] text-[#888888] font-mono mt-0.5 leading-snug">
+                {isAr ? "أداء وسرعة Lighthouse ومعايير SEO" : "Lighthouse Perf & SEO"}
+              </span>
+            </div>
+
+            <div className="flex flex-col">
+              <span className="text-[20px] font-medium text-[#E8E8E8] tracking-tight font-mono">
+                0.00 CLS
+              </span>
+              <span className="text-[11px] text-[#888888] font-mono mt-0.5 leading-snug">
+                {isAr ? "استقرار بصري تام وتخطيط منعدم الإزاحة" : "Zero Layout Shift UI"}
+              </span>
+            </div>
+
+            <div className="flex flex-col">
+              <span className="text-[20px] font-medium text-[#E8E8E8] tracking-tight font-mono">
+                RTL &amp; LTR
+              </span>
+              <span className="text-[11px] text-[#888888] font-mono mt-0.5 leading-snug">
+                {isAr ? "أنظمة ثنائية اللغة تدعم العربية أصلياً" : "Native Bilingual Systems"}
+              </span>
+            </div>
           </div>
         </section>
 
@@ -106,62 +194,47 @@ export default function App() {
 
         {/* WORK SECTION */}
         <div id="work-section" className="scroll-mt-6">
-          <ProjectList />
+          <ProjectList lang={lang} />
         </div>
 
         {/* Divider 2: solid #222222, exactly 64px below (mt-16) */}
         <div className="h-[1px] bg-[#222222] w-full mt-16 mb-16" />
 
-        {/* STACK SECTION */}
-        <section id="stack-section" className="scroll-mt-6 flex flex-col items-start">
-          {/* Section label: 12px, #666666, uppercase, letter-spacing 0.08em */}
+        {/* 2. STACK SECTION — 3-Card Architectural Grid (FIXED: no multi-line broken code wrapping) */}
+        <section id="stack-section" className="scroll-mt-6 flex flex-col items-start w-full">
           <span className="text-[12px] font-sans text-[#666666] uppercase tracking-[0.08em] select-none">
-            Stack
+            {isAr ? "التقنيات والمعمارية" : "Stack"}
           </span>
 
-          <p className="text-[14px] text-[#666666] leading-[1.9] max-w-[560px] mt-6 select-text">
-            I build with{" "}
-            <code className="text-[13px] font-mono text-[#E8E8E8] bg-[#141414] border border-[#222222] rounded-[4px] px-[3px]">React</code>{" "}
-            <code className="text-[13px] font-mono text-[#E8E8E8] bg-[#141414] border border-[#222222] rounded-[4px] px-[3px]">Next.js</code>{" "}
-            <code className="text-[13px] font-mono text-[#E8E8E8] bg-[#141414] border border-[#222222] rounded-[4px] px-[3px]">React Native</code>{" "}
-            and{" "}
-            <code className="text-[13px] font-mono text-[#E8E8E8] bg-[#141414] border border-[#222222] rounded-[4px] px-[3px]">Expo</code>{" "}
-            on the frontend, paired with{" "}
-            <code className="text-[13px] font-mono text-[#E8E8E8] bg-[#141414] border border-[#222222] rounded-[4px] px-[3px]">Zustand</code>.{" "}
-            I use{" "}
-            <code className="text-[13px] font-mono text-[#E8E8E8] bg-[#141414] border border-[#222222] rounded-[4px] px-[3px]">Node.js</code>{" "}
-            <code className="text-[13px] font-mono text-[#E8E8E8] bg-[#141414] border border-[#222222] rounded-[4px] px-[3px]">Flask</code>{" "}
-            and{" "}
-            <code className="text-[13px] font-mono text-[#E8E8E8] bg-[#141414] border border-[#222222] rounded-[4px] px-[3px]">Supabase</code>{" "}
-            on the backend integrated with{" "}
-            <code className="text-[13px] font-mono text-[#E8E8E8] bg-[#141414] border border-[#222222] rounded-[4px] px-[3px]">Microsoft SQL Server</code>{" "}
-            <code className="text-[13px] font-mono text-[#E8E8E8] bg-[#141414] border border-[#222222] rounded-[4px] px-[3px]">PostGIS</code>{" "}
-            and{" "}
-            <code className="text-[13px] font-mono text-[#E8E8E8] bg-[#141414] border border-[#222222] rounded-[4px] px-[3px]">Firebase FCM</code>.{" "}
-            I deploy and build with{" "}
-            <code className="text-[13px] font-mono text-[#E8E8E8] bg-[#141414] border border-[#222222] rounded-[4px] px-[3px]">Vercel</code>{" "}
-            <code className="text-[13px] font-mono text-[#E8E8E8] bg-[#141414] border border-[#222222] rounded-[4px] px-[3px]">Docker</code>{" "}
-            and{" "}
-            <code className="text-[13px] font-mono text-[#E8E8E8] bg-[#141414] border border-[#222222] rounded-[4px] px-[3px]">EAS Build</code>,{" "}
-            design in{" "}
-            <code className="text-[13px] font-mono text-[#E8E8E8] bg-[#141414] border border-[#222222] rounded-[4px] px-[3px]">Figma</code>,{" "}
-            and manage projects in{" "}
-            <code className="text-[13px] font-mono text-[#E8E8E8] bg-[#141414] border border-[#222222] rounded-[4px] px-[3px]">Notion</code>{" "}
-            and{" "}
-            <code className="text-[13px] font-mono text-[#E8E8E8] bg-[#141414] border border-[#222222] rounded-[4px] px-[3px]">Jira</code>.{" "}
-            For data, ML, and spatial work, I use{" "}
-            <code className="text-[13px] font-mono text-[#E8E8E8] bg-[#141414] border border-[#222222] rounded-[4px] px-[3px]">Python</code>{" "}
-            <code className="text-[13px] font-mono text-[#E8E8E8] bg-[#141414] border border-[#222222] rounded-[4px] px-[3px]">scikit-learn</code>{" "}
-            <code className="text-[13px] font-mono text-[#E8E8E8] bg-[#141414] border border-[#222222] rounded-[4px] px-[3px]">pandas</code>{" "}
-            <code className="text-[13px] font-mono text-[#E8E8E8] bg-[#141414] border border-[#222222] rounded-[4px] px-[3px]">Power BI</code>{" "}
-            <code className="text-[13px] font-mono text-[#E8E8E8] bg-[#141414] border border-[#222222] rounded-[4px] px-[3px]">Tableau</code>{" "}
-            and{" "}
-            <code className="text-[13px] font-mono text-[#E8E8E8] bg-[#141414] border border-[#222222] rounded-[4px] px-[3px]">Mapbox GL</code>.
-          </p>
+          <div className="flex flex-col gap-4 mt-6 w-full">
+            {STACK_CARDS.map((card) => (
+              <div
+                key={card.id}
+                className="p-5 rounded-lg bg-white/[0.02] border border-[#222222] hover:border-white/10 transition-colors flex flex-col gap-3"
+              >
+                <div className="flex items-center justify-between select-none">
+                  <h3 className="text-[13px] font-mono text-[#E8E8E8] uppercase tracking-wider flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#3B82F6]" />
+                    {isAr ? card.titleAr : card.title}
+                  </h3>
+                  <span className="text-[11px] font-mono text-[#666666]">
+                    {card.pills.length} {isAr ? "عنصر" : "modules"}
+                  </span>
+                </div>
 
-          <span className="text-[13px] text-[#666666] italic mt-4 select-none">
-            I pick up whatever the project needs.
-          </span>
+                <div className="flex flex-wrap items-center gap-2" dir="ltr">
+                  {card.pills.map((pill, pIdx) => (
+                    <span
+                      key={pIdx}
+                      className="text-xs bg-white/[0.04] border border-white/[0.08] text-neutral-300 px-2.5 py-1 rounded font-mono inline-flex items-center whitespace-nowrap hover:border-white/20 hover:text-white transition-colors select-none"
+                    >
+                      {pill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
         </section>
 
         {/* Divider 3: solid #222222, exactly 64px below (mt-16) */}
@@ -170,16 +243,19 @@ export default function App() {
         {/* CONTACT SECTION */}
         <section id="contact-section" className="scroll-mt-6 flex flex-col items-start font-sans">
           <span className="text-[12px] font-sans text-[#666666] uppercase tracking-[0.08em] select-none mb-6">
-            Contact
+            {isAr ? "تواصل معي" : "Contact"}
           </span>
-          <p className="text-[14px] text-[#666666] mb-4">
-            Open to freelance projects and collaborations.
+          <p className="text-[14px] text-[#888888] mb-4">
+            {isAr
+              ? "متاح لفرص العمل عن بعد بدوام كامل وهندسة واجهات المشاريع الرقمية الكبرى."
+              : "Available for full-time remote Frontend / UI Engineering roles and enterprise collaborations."}
           </p>
           <div className="flex flex-col items-start leading-[2.2]">
             <a
               id="contact-phone-link"
               href="tel:+213776051622"
               className="text-[14px] text-[#3B82F6] hover:underline"
+              dir="ltr"
             >
               +213 776-051-622
             </a>
@@ -192,20 +268,31 @@ export default function App() {
             </a>
             <a
               id="contact-linkedin-link"
-              href="https://www.linkedin.com/in/louai-serir"
+              href="https://linkedin.com/in/louai-serir"
               target="_blank"
               rel="noopener noreferrer referrer"
               className="text-[14px] text-[#3B82F6] hover:underline"
             >
               linkedin.com/in/louai-serir
             </a>
+            <a
+              id="contact-github-link"
+              href="https://github.com/louai-pixelouai"
+              target="_blank"
+              rel="noopener noreferrer referrer"
+              className="text-[14px] text-[#3B82F6] hover:underline"
+            >
+              github.com/louai-pixelouai
+            </a>
           </div>
         </section>
 
         {/* FOOTER */}
         <footer id="footer-block" className="mt-16 text-center select-none">
-          <span className="text-[12px] text-[#444444] font-normal">
-            © 2026 Louai Serir
+          <span className="text-[12px] text-[#444444] font-normal font-mono">
+            {isAr
+              ? "© 2026 لؤي سرير · تم التطوير باستخدام React و TypeScript"
+              : "© 2026 Louai Serir · Built with React & TypeScript"}
           </span>
         </footer>
 

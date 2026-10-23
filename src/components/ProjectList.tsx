@@ -3,101 +3,219 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from "react";
-import { ArrowUpRight } from "lucide-react";
+import React, { useState } from "react";
+import { ArrowUpRight, ChevronDown, ChevronUp } from "lucide-react";
 import LiquidGlassOrb from "./LiquidGlassOrb";
+import { projects } from "../data";
+import { Project } from "../types";
 
-interface ProjectRow {
-  name: string;
-  category?: string;
-  description: string;
-  year: string;
-  tag?: string;
-  url?: string;
-  glowColor: string;
-  accentGradient: string;
-  accentColor: string;
+const FILTER_GROUPS = [
+  "All",
+  "Next.js & Web Architecture",
+  "Industrial & Motion UI",
+  "E-Commerce & SaaS",
+  "AI & Data",
+] as const;
+
+const FILTER_LABELS_AR: Record<string, string> = {
+  All: "الكل",
+  "Next.js & Web Architecture": "Next.js ومعمارية الويب",
+  "Industrial & Motion UI": "الواجهات الصناعية والحركية",
+  "E-Commerce & SaaS": "التجارة الإلكترونية وSaaS",
+  "AI & Data": "الذكاء الاصطناعي والبيانات",
+};
+
+interface ProjectListProps {
+  lang?: "en" | "ar";
 }
 
-const SPEC_PROJECTS: ProjectRow[] = [
-  {
-    name: "GridForecast AI",
-    category: "AI / MACHINE LEARNING",
-    description: "ML load-forecasting platform built during a capstone internship at SONELGAZ, Algeria's national electricity company. Random Forest trained on ~106,000 hourly records — 98.65% accuracy, in a real production environment.",
-    year: "2025 – 2026",
-    url: "https://electricity-forecasting-app.vercel.app/",
-    glowColor: "rgba(59, 130, 246, 0.45)",
-    accentGradient: "radial-gradient(circle at 40% 40%, rgba(56, 189, 248, 0.55) 0%, rgba(37, 99, 235, 0.35) 60%, transparent 100%)",
-    accentColor: "rgba(59, 130, 246, 0.5)"
-  },
-  {
-    name: "Clinicos",
-    category: "HEALTH-TECH",
-    description: "Algerian health-tech platform. Role-based clinical dashboard with Gantt-style scheduling, real-time queues, and a trust-scoring system that reduces appointment fraud. Bilingual RTL/LTR.",
-    year: "2026",
-    glowColor: "rgba(16, 185, 129, 0.45)",
-    accentGradient: "radial-gradient(circle at 40% 40%, rgba(52, 211, 153, 0.55) 0%, rgba(13, 148, 136, 0.35) 60%, transparent 100%)",
-    accentColor: "rgba(16, 185, 129, 0.5)"
-  },
-  {
-    name: "Data Warehouse & BI",
-    category: "DATA ENGINEERING",
-    description: "Self-directed data engineering project. SQL Server warehouse using Medallion architecture (Bronze/Silver/Gold), star-schema modeling, and T-SQL ETL — with Power BI and Tableau dashboards built on top using DAX and LOD expressions.",
-    year: "2026",
-    glowColor: "rgba(139, 92, 246, 0.45)",
-    accentGradient: "radial-gradient(circle at 40% 40%, rgba(167, 139, 250, 0.55) 0%, rgba(124, 58, 237, 0.35) 60%, transparent 100%)",
-    accentColor: "rgba(139, 92, 246, 0.5)"
-  },
-  {
-    name: "CosmeticaDZ",
-    category: "E-COMMERCE",
-    description: "Bilingual e-commerce marketplace for the Algerian market. Solo, concept to launch — regional payment flow by Wilaya/Baladia, admin dashboard tracking orders, stock, and margins.",
-    year: "2025",
-    url: "https://cosmeticadz.netlify.app/",
-    glowColor: "rgba(244, 63, 94, 0.45)",
-    accentGradient: "radial-gradient(circle at 40% 40%, rgba(251, 113, 133, 0.55) 0%, rgba(219, 39, 119, 0.35) 60%, transparent 100%)",
-    accentColor: "rgba(244, 63, 94, 0.5)"
-  }
-];
+export default function ProjectList({ lang = "en" }: ProjectListProps) {
+  const [activeFilter, setActiveFilter] = useState<string>("All");
+  const [expandedSpecs, setExpandedSpecs] = useState<Record<string, boolean>>({});
 
-export default function ProjectList() {
+  const isAr = lang === "ar";
+
+  const toggleSpecs = (projectName: string) => {
+    setExpandedSpecs((prev) => ({
+      ...prev,
+      [projectName]: !prev[projectName],
+    }));
+  };
+
+  const filteredProjects =
+    activeFilter === "All"
+      ? projects
+      : projects.filter((p) => p.filterGroup === activeFilter);
+
+  const getCount = (group: string) => {
+    if (group === "All") return projects.length;
+    return projects.filter((p) => p.filterGroup === group).length;
+  };
+
+  const isGithubUrl = (url?: string) => Boolean(url?.includes("github.com"));
+
+  const getActionLinks = (project: Project) => {
+    const links: { label: string; url: string; isPrimary: boolean }[] = [];
+
+    // Multiple explicit live links if provided (e.g. Aquila, Copackers, Dado)
+    if (project.liveLinks && project.liveLinks.length > 0) {
+      project.liveLinks.forEach((item) => {
+        links.push({
+          label: item.label,
+          url: item.url,
+          isPrimary: true,
+        });
+      });
+    } else if (project.url && !isGithubUrl(project.url)) {
+      // Single live site link
+      links.push({
+        label: isAr ? "الموقع المباشر" : "Live Site",
+        url: project.url,
+        isPrimary: true,
+      });
+    }
+
+    // Explicit GitHub links
+    if (project.githubLinks && project.githubLinks.length > 0) {
+      project.githubLinks.forEach((item) => {
+        links.push({
+          label: item.label,
+          url: item.url,
+          isPrimary: false,
+        });
+      });
+    } else if (project.github) {
+      if (
+        project.url &&
+        isGithubUrl(project.url) &&
+        project.url !== project.github
+      ) {
+        // Distinct repositories (e.g. Aquila & Copackers)
+        links.push({
+          label: "GitHub (Aquila)",
+          url: project.url,
+          isPrimary: false,
+        });
+        links.push({
+          label: "GitHub (Copackers)",
+          url: project.github,
+          isPrimary: false,
+        });
+      } else {
+        links.push({
+          label: "GitHub",
+          url: project.github,
+          isPrimary: !project.url || isGithubUrl(project.url),
+        });
+      }
+    } else if (project.url && isGithubUrl(project.url)) {
+      links.push({
+        label: "GitHub",
+        url: project.url,
+        isPrimary: false,
+      });
+    }
+
+    return links;
+  };
+
+  const getPrimaryUrl = (project: Project) => {
+    if (project.url && !isGithubUrl(project.url)) return project.url;
+    if (project.url) return project.url;
+    if (project.github) return project.github;
+    return undefined;
+  };
+
   return (
     <div id="projects-section" className="flex flex-col">
-      {/* Section label: 12px, #666666, uppercase, letter-spacing 0.08em */}
-      <span className="text-[12px] font-sans text-[#666666] uppercase tracking-[0.08em] select-none">
-        Work
-      </span>
+      {/* Section Header */}
+      <div className="flex items-center justify-between select-none">
+        <span className="text-[12px] font-sans text-[#666666] uppercase tracking-[0.08em]">
+          {isAr ? "الأعمال والمشاريع" : "Work"}
+        </span>
+        <span className="text-[11px] font-mono text-[#666666]">
+          {isAr
+            ? `${filteredProjects.length} من أصل ${projects.length} مشاريع`
+            : `${filteredProjects.length} of ${projects.length} Projects`}
+        </span>
+      </div>
 
-      {/* List of projects as simple rows — with 24px gap from the label */}
-      <div className="flex flex-col mt-6 border-t border-[#222222]">
-        {SPEC_PROJECTS.map((project, idx) => (
-          <div
-            id={`project-row-${idx}`}
-            key={project.name}
-            className="group flex justify-between items-start py-5 border-b border-[#222222] transition-colors duration-200 hover:bg-[#141414] px-3 -mx-3"
-          >
-            {/* Left: project category, liquid glass orb + name, and description */}
-            <div className="flex flex-col pr-4 flex-1">
-              {project.category && (
-                <span className="text-[11px] font-sans text-[#666666] uppercase tracking-[0.06em] mb-1.5 select-none">
+      {/* 1. Category Filter Bar (FIXED: flex-wrap, 100% visible, no clipping) */}
+      <div
+        role="tablist"
+        aria-label="Filter projects by category"
+        className="flex flex-wrap items-center gap-2 mt-4 select-none"
+      >
+        {FILTER_GROUPS.map((group) => {
+          const isSelected = activeFilter === group;
+          const count = getCount(group);
+          const label = isAr ? FILTER_LABELS_AR[group] || group : group;
+
+          return (
+            <button
+              key={group}
+              role="tab"
+              aria-selected={isSelected}
+              onClick={() => setActiveFilter(group)}
+              className={`text-[12px] font-mono px-3 py-1 rounded-full border transition-all duration-200 cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
+                isSelected
+                  ? "bg-white/[0.08] text-[#E8E8E8] border-white/25 shadow-sm"
+                  : "bg-transparent text-[#666666] border-white/[0.06] hover:text-[#A0A0A0] hover:border-white/10 hover:bg-white/[0.02]"
+              }`}
+            >
+              <span>{label}</span>
+              <span
+                className={`text-[10px] px-1.5 py-0.2 rounded-full font-sans transition-colors ${
+                  isSelected
+                    ? "bg-white/15 text-[#E8E8E8]"
+                    : "bg-white/[0.04] text-[#666666]"
+                }`}
+              >
+                {count}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Projects List */}
+      <div className="flex flex-col mt-4 border-t border-[#222222] transition-opacity duration-200">
+        {filteredProjects.map((project, idx) => {
+          const actionLinks = getActionLinks(project);
+          const primaryUrl = getPrimaryUrl(project);
+          const isSpecsOpen = Boolean(expandedSpecs[project.name]);
+
+          return (
+            <div
+              id={`project-row-${idx}`}
+              key={project.name}
+              className="group flex flex-col py-6 border-b border-[#222222] transition-colors duration-200 hover:bg-[#121212] px-3 -mx-3 rounded-md"
+            >
+              {/* Category & Year */}
+              <div className="flex items-center justify-between gap-2 mb-1.5 select-none">
+                <span className="text-[11px] font-mono text-[#777777] uppercase tracking-[0.06em]">
                   {project.category}
                 </span>
-              )}
 
-              <div className="flex items-center gap-2.5 my-0.5">
-                {/* Pure Abstract Liquid Glass Orb */}
+                <span className="text-[12px] font-mono text-[#666666]">
+                  {project.year}
+                </span>
+              </div>
+
+              {/* Title & Glowing Liquid Glass Orb */}
+              <div className="flex items-center gap-2.5 my-1">
                 <LiquidGlassOrb
                   glowColor={project.glowColor}
                   accentGradient={project.accentGradient}
                   accentColor={project.accentColor}
                 />
 
-                {project.url ? (
+                {primaryUrl ? (
                   <a
-                    href={project.url}
+                    href={primaryUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[14px] font-medium text-[#E8E8E8] transition-colors duration-200 hover:text-[#3B82F6] inline-flex items-center gap-1.5 group/title"
+                    className="text-[15px] font-medium text-[#E8E8E8] transition-colors duration-200 hover:text-[#3B82F6] inline-flex items-center gap-1.5 group/title"
                   >
                     <span>{project.name}</span>
                     <ArrowUpRight
@@ -106,66 +224,125 @@ export default function ProjectList() {
                     />
                   </a>
                 ) : (
-                  <span className="text-[14px] font-medium text-[#E8E8E8] transition-colors duration-200 group-hover:text-[#3B82F6]">
+                  <span className="text-[15px] font-medium text-[#E8E8E8]">
                     {project.name}
                   </span>
                 )}
               </div>
 
-              <span className="text-[14px] text-[#666666] font-normal leading-[1.5] mt-1.5">
+              {/* Description */}
+              <p className="text-[13px] md:text-[14px] text-[#888888] font-normal leading-relaxed mt-1.5 select-text">
                 {project.description}
-              </span>
+              </p>
 
-              {project.url && (
-                <a
-                  href={project.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-[13px] text-[#3B82F6] hover:underline mt-2.5 w-fit font-mono group/link"
+              {/* 3.1 Differentiated Telemetry Strip (borderless inline telemetry with glowing dots) */}
+              {project.highlights && project.highlights.length > 0 && (
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2.5 text-[11px] font-mono select-none">
+                  {project.highlights.map((highlight, hIdx) => (
+                    <span
+                      key={hIdx}
+                      className="inline-flex items-center gap-1.5"
+                    >
+                      <span className="text-[#38BDF8] text-[10px] leading-none">✦</span>
+                      <span className="text-neutral-300 font-normal">{highlight}</span>
+                      {hIdx < project.highlights.length - 1 && (
+                        <span className="text-neutral-600 ps-1">·</span>
+                      )}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {/* 3.2 Monospace Tech Stack Pill Badges */}
+              {project.stack && project.stack.length > 0 && (
+                <div className="flex flex-wrap items-center gap-1.5 mt-2.5" dir="ltr">
+                  {project.stack.map((tech, tIdx) => (
+                    <span
+                      key={tIdx}
+                      className="text-xs bg-white/[0.03] border border-white/[0.08] text-neutral-300 px-2.5 py-0.5 rounded font-mono whitespace-nowrap select-none"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {/* 3.3 Action Links & Engineering Specs Toggle Button */}
+              <div className="flex flex-wrap items-center gap-4 mt-3 pt-1">
+                {actionLinks.map((link, lIdx) => (
+                  <a
+                    key={lIdx}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`inline-flex items-center gap-1 text-[12px] font-mono transition-colors duration-150 hover:underline group/act ${
+                      link.isPrimary
+                        ? "text-[#3B82F6] hover:text-[#60A5FA]"
+                        : "text-neutral-400 hover:text-neutral-200"
+                    }`}
+                  >
+                    <span>{link.label}</span>
+                    <ArrowUpRight
+                      className="w-3.5 h-3.5 transition-transform duration-150 group-hover/act:translate-x-0.5 group-hover/act:-translate-y-0.5 shrink-0"
+                      strokeWidth={2}
+                    />
+                  </a>
+                ))}
+
+                {/* Interactive Engineering Specs Accordion Toggle */}
+                {project.architectureSpecs && project.architectureSpecs.length > 0 && (
+                  <button
+                    onClick={() => toggleSpecs(project.name)}
+                    aria-expanded={isSpecsOpen}
+                    className="inline-flex items-center gap-1.5 text-[12px] font-mono text-neutral-400 hover:text-neutral-100 hover:underline transition-colors cursor-pointer bg-transparent border-none p-0 select-none"
+                  >
+                    <span>
+                      {isSpecsOpen
+                        ? isAr
+                          ? "إخفاء التفاصيل −"
+                          : "Hide Specs −"
+                        : isAr
+                          ? "التفاصيل الهندسية +"
+                          : "Engineering Specs +"}
+                    </span>
+                    {isSpecsOpen ? (
+                      <ChevronUp className="w-3.5 h-3.5 shrink-0" strokeWidth={2} />
+                    ) : (
+                      <ChevronDown className="w-3.5 h-3.5 shrink-0" strokeWidth={2} />
+                    )}
+                  </button>
+                )}
+              </div>
+
+              {/* Expanded Architectural Breakdown Panel */}
+              {isSpecsOpen && project.architectureSpecs && (
+                <div
+                  className="bg-white/[0.02] border-s-2 border-neutral-700 ps-4 py-3 mt-3 text-xs text-neutral-300 space-y-2 rounded-e transition-all duration-200 animate-in fade-in slide-in-from-top-1"
                 >
-                  <span>{project.url.replace(/^https?:\/\//, '').replace(/\/$/, '')}</span>
-                  <ArrowUpRight
-                    className="w-3 h-3 text-[#3B82F6] transition-transform duration-200 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 shrink-0"
-                    strokeWidth={2}
-                  />
-                </a>
+                  <div className="text-[11px] font-mono uppercase tracking-wider text-neutral-400 select-none mb-1">
+                    {isAr ? "معمارية النظام والتنفيذ التقني:" : "Architectural Highlights & Technical Spec:"}
+                  </div>
+                  {project.architectureSpecs.map((spec, sIdx) => (
+                    <div key={sIdx} className="flex items-start gap-2 leading-relaxed">
+                      <span className="text-[#3B82F6] font-mono shrink-0 select-none">›</span>
+                      <span className="text-neutral-300">{spec}</span>
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
-
-            {/* Right: year right-aligned & optional tag */}
-            <div className="flex items-center gap-2 shrink-0 select-none pt-[3px] text-right">
-              {project.url && (
-                <a
-                  href={project.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[11px] text-[#3B82F6] border border-[#3B82F6]/30 bg-[#3B82F6]/10 hover:bg-[#3B82F6]/20 rounded-[4px] px-1.5 py-[2px] font-normal leading-none inline-flex items-center gap-1 transition-colors group/live"
-                  title={`Open ${project.name}`}
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#3B82F6] inline-block animate-pulse" />
-                  Live
-                  <ArrowUpRight
-                    className="w-2.5 h-2.5 text-[#3B82F6] transition-transform duration-150 group-hover/live:translate-x-0.5 group-hover/live:-translate-y-0.5"
-                    strokeWidth={2.5}
-                  />
-                </a>
-              )}
-              <span className="text-[14px] text-[#666666] font-normal">
-                {project.year}
-              </span>
-              {project.tag && (
-                <span className="text-[11px] text-[#666666] border border-[#222222] rounded-[4px] px-1 py-[1px] font-normal leading-none inline-block align-middle">
-                  {project.tag}
-                </span>
-              )}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
-      {/* Below the list, one small line in #666666 14px italic */}
-      <p id="work-more-label" className="text-[14px] text-[#666666] italic mt-6 select-none">
-        More available on request.
+      {/* Footer hint */}
+      <p
+        id="work-more-label"
+        className="text-[13px] text-[#666666] italic mt-6 select-none"
+      >
+        {isAr
+          ? "دراسات الحالة التفصيلية ومراجعات الأكواد متاحة عند الطلب."
+          : "Enterprise case studies and code walkthroughs available on request."}
       </p>
     </div>
   );

@@ -4,11 +4,24 @@
  */
 
 export interface Project {
-  id: string;
-  title: string;
+  name: string;
+  category: string;
+  filterGroup: string;
   description: string;
   year: string;
+  isLive: boolean;
   url?: string;
+  github?: string;
+  liveLinks?: { label: string; url: string }[];
+  githubLinks?: { label: string; url: string }[];
+  stack: string[];
+  highlights: string[];
+  architectureSpecs?: string[];
+  glowColor: string;
+  accentGradient: string;
+  accentColor: string;
+  id?: string;
+  title?: string;
   tags?: string[];
 }
 
